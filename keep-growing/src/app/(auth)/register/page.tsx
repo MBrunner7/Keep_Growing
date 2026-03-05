@@ -1,17 +1,28 @@
 import Link from 'next/link';
 import RegisterForm from './register-form';
+import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 
 export default async function RegisterPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
+  // 1. Auth-Check: Prüfen, ob der User bereits eingeloggt ist
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // 2. Wenn eingeloggt, direkt zum Dashboard weiterleiten
+  if (user) {
+    redirect('/dashboard');
+  }
+
   const params = await searchParams;
 
   return (
     <main className="min-h-screen bg-white flex flex-col items-center justify-start font-[family-name:var(--font-geist-sans)]">
       
-      {/* Back-Pfeil oben links (Mockup Page 2) */}
+      {/* Back-Pfeil oben links */}
       <div className="w-full max-w-md p-8 pt-12 flex justify-start">
         <Link href="/login" className="bg-[#b57a84] w-12 h-10 rounded-xl flex items-center justify-center shadow-sm hover:scale-105 transition-transform">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
@@ -47,7 +58,7 @@ export default async function RegisterPage({
         </div>
       </div>
 
-      {/* Blumen-Illustration am unteren Rand (Mockup Page 2) */}
+      {/* Blumen-Illustration am unteren Rand */}
       <div className="mt-auto w-full flex justify-center items-end p-0 overflow-hidden">
         <div className="relative w-full h-32 flex justify-center items-end opacity-60">
           <span className="text-6xl mb-[-10px] tracking-widest">🌸🪻🌼🌷🌸</span>

@@ -1,11 +1,22 @@
 import Link from 'next/link';
 import LoginForm from './login-form';
+import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 
 export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; message?: string }>;
 }) {
+  // 1. Auth-Check: Prüfen, ob der User bereits eine aktive Session hat
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // 2. Wenn eingeloggt, direkt zum Dashboard schicken
+  if (user) {
+    redirect('/dashboard');
+  }
+
   const params = await searchParams;
 
   return (
@@ -30,7 +41,7 @@ export default async function LoginPage({
           </svg>
         </div>
 
-        {/* Header - Exakt wie im Bild-Ausschnitt */}
+        {/* Header - Exakt wie im Mockup */}
         <div className="mb-10 text-left">
           <h1 className="text-[24px] font-bold text-[#555555] leading-tight mb-1">
             Welcome Back!
@@ -54,7 +65,9 @@ export default async function LoginPage({
         )}
 
         {/* LoginForm */}
-        <LoginForm />
+        <div className="w-full">
+          <LoginForm />
+        </div>
 
         <div className="mt-12 text-center">
           <p className="text-sm text-gray-500 mb-6 font-semibold">

@@ -51,6 +51,7 @@ async function getTrainingStats(supabase: any, userId: string): Promise<{ kw: nu
 export default async function DashboardPage() {
   const supabase = await createClient();
 
+  // AUTH-CHECK: Sicherstellen, dass nur eingeloggte User Zugriff haben
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     redirect('/login');
@@ -59,7 +60,7 @@ export default async function DashboardPage() {
   const userName = user.user_metadata.full_name || 'User';
   const today = new Date().toLocaleDateString('en-CA');
 
-  // Daily Entry Laden
+  // Daily Entry Laden (Stimmung und Notizen)
   const { data: entry } = await supabase
     .from('daily_entries')
     .select('score, note')
@@ -69,7 +70,7 @@ export default async function DashboardPage() {
 
   const stats = await getTrainingStats(supabase, user.id);
 
-  // Koordinaten für die gelbe Linie
+  // Koordinaten für die gelbe Linie im Insights-Graph
   const svgPoints = stats.map((item, i) => {
     const x = (i * 12.5) + 6.25;
     const y = 100 - (Math.min(item.count, 8) / 8 * 100);
@@ -79,7 +80,7 @@ export default async function DashboardPage() {
   return (
     <main className="min-h-screen bg-white flex flex-col items-center p-6 font-sans">
       
-      {/* Header Bereich - Mit Cursive Font aus Mockup */}
+      {/* Header Bereich - Begrüßung und Training-Absprung */}
       <div className="w-full max-w-md flex justify-between items-start mb-8 text-left">
         <div>
           <h2 className="font-[family-name:var(--font-cursive)] text-[#c5c1aa] text-5xl leading-tight lowercase opacity-90">
@@ -145,7 +146,7 @@ export default async function DashboardPage() {
         </div>
       </form>
 
-      {/* Insights Bereich */}
+      {/* Insights Bereich - Graphische Auswertung */}
       <div className="w-full max-w-md mt-4">
         <h3 className="font-bold text-gray-800 text-center mb-12 text-lg">Insights</h3>
         
@@ -180,7 +181,7 @@ export default async function DashboardPage() {
             />
           </svg>
 
-          {/* KREIS-PUNKTE */}
+          {/* KREIS-PUNKTE AUF DEM GRAPH */}
           <div className="absolute inset-0 h-full w-full pointer-events-none z-30 overflow-visible">
             {stats.map((item, i) => {
               const x = (i * 12.5) + 6.25;
@@ -199,23 +200,23 @@ export default async function DashboardPage() {
             })}
           </div>
 
-          {/* Balken & Hover Container */}
+          {/* Balkendiagramm & Hover-Effekte */}
           <div className="relative h-full w-full flex items-end justify-around pb-0 z-10">
             {stats.map((item, i) => (
               <div key={i} className="group relative flex flex-col items-center w-[10%] h-full justify-end">
                 
-                {/* --- VERTIKALE GESTRICHELTE LINIE (FÜR DEN LOOK AUS IMAGE_ABF6A9) --- */}
+                {/* Vertikale Hilfslinie bei Hover */}
                 <div className="absolute inset-x-0 top-0 bottom-0 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                   <div className="border-l border-dashed border-gray-300 h-full" />
                 </div>
 
-                {/* Tooltip bei Hover */}
+                {/* Tooltip für exakte Anzahl */}
                 <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-all duration-200 bg-[#2d2d2d] text-white text-[12px] font-bold py-1.5 px-3 rounded-lg z-40 shadow-xl transform -translate-y-1 group-hover:translate-y-0">
                   {item.count}
                   <div className="absolute top-full left-1/2 -ml-1 border-[6px] border-transparent border-t-[#2d2d2d]"></div>
                 </div>
 
-                {/* Balken */}
+                {/* Datenbalken */}
                 <div 
                   className={`w-full rounded-t-lg transition-all duration-500 relative z-10 ${
                     i === stats.length - 1 
@@ -225,7 +226,7 @@ export default async function DashboardPage() {
                   style={{ height: `${(Math.min(item.count, 8) / 8) * 100}%` }}
                 />
                 
-                {/* X-Achse Beschriftung (DYNAMISCHE KW) */}
+                {/* X-Achse Beschriftung (Kalenderwochen) */}
                 <span className="absolute -bottom-7 text-[9px] text-gray-400 font-bold tracking-tighter uppercase">
                   KW{item.kw}
                 </span>
@@ -235,9 +236,9 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Footer mit Link zum Impressum */}
       <div className="mt-auto py-12 text-center">
-         <Link href="/impressum" className="text-[10px] text-gray-300 underline uppercase tracking-[0.3em] font-bold">
+         <Link href="/impressum" className="text-[10px] text-gray-300 underline uppercase tracking-[0.3em] font-bold hover:text-gray-600 transition-colors">
             About us
          </Link>
       </div>
