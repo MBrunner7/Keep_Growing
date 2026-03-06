@@ -87,15 +87,15 @@ export async function saveDailyEntry(formData: FormData) {
     .from('daily_entries')
     .upsert({
       user_id: user.id,
-      date: today,
+      created_at: today, // Geändert von 'date' zu 'created_at' gemäß Screenshot
       score: score ? parseInt(score.toString()) : null,
       note: note,
     }, { 
-      onConflict: 'user_id,date' // Verweist auf unseren Unique Constraint
+      onConflict: 'user_id,created_at' // Muss exakt mit dem SQL Constraint übereinstimmen
     });
 
   if (error) {
-    console.error('Spehler beim Speichern:', error.message);
+    console.error('Fehler beim Speichern:', error.message);
     return;
   }
 

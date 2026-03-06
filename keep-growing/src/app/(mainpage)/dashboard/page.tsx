@@ -58,15 +58,18 @@ export default async function DashboardPage() {
   }
 
   const userName = user.user_metadata.full_name || 'User';
+  
+  // WICHTIG: Erzeugt das Vergleichsdatum für heute im Format YYYY-MM-DD
   const today = new Date().toLocaleDateString('en-CA');
 
-  // Daily Entry Laden (Stimmung und Notizen)
+  // Daily Entry Laden (Stimmung und Notizen) für den AKTUELLEN Tag
+  // Wir nutzen 'created_at' als Spaltennamen passend zur DB-Struktur
   const { data: entry } = await supabase
     .from('daily_entries')
     .select('score, note')
     .eq('user_id', user.id)
-    .eq('date', today)
-    .single();
+    .eq('created_at', today)
+    .maybeSingle();
 
   const stats = await getTrainingStats(supabase, user.id);
 
@@ -115,6 +118,7 @@ export default async function DashboardPage() {
                 name="score" 
                 value={item.val} 
                 className="hidden peer" 
+                // Vorauswahl, falls heute schon etwas gespeichert wurde
                 defaultChecked={entry?.score === item.val} 
               />
               <span className="text-4xl transition-all duration-500 inline-block 
@@ -131,6 +135,7 @@ export default async function DashboardPage() {
         <label className="block font-bold text-gray-800 mb-3 text-lg">Notes:</label>
         <textarea 
           name="note"
+          // Wert wird hier vorausgefüllt, falls heute schon Text gespeichert wurde
           defaultValue={entry?.note || ''}
           className="w-full h-32 bg-[#f2f2eb] rounded-[25px] p-5 outline-none resize-none border-none text-gray-700 shadow-inner placeholder-gray-400"
           placeholder="Schreibe hier deine Gedanken..."
@@ -141,7 +146,7 @@ export default async function DashboardPage() {
             type="submit"
             className="bg-[#b57a84] text-white px-10 py-3 rounded-2xl font-bold shadow-lg hover:bg-[#a36972] active:scale-95 transition-all text-lg"
           >
-            Save
+            {entry ? 'Update' : 'Save'}
           </button>
         </div>
       </form>
