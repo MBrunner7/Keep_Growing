@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import LoginForm from './login-form';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
@@ -8,11 +9,9 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ error?: string; message?: string }>;
 }) {
-  // 1. Auth-Check: Prüfen, ob der User bereits eine aktive Session hat
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // 2. Wenn eingeloggt, direkt zum Dashboard schicken
   if (user) {
     redirect('/dashboard');
   }
@@ -23,15 +22,23 @@ export default async function LoginPage({
     <main className="min-h-screen bg-white flex flex-col items-center justify-end font-[family-name:var(--font-geist-sans)]">
       
       {/* Illustrations-Bereich oben */}
-      <div className="flex-1 flex items-center justify-center w-full p-10">
-        <div className="relative w-64 h-64 flex items-center justify-center">
-          <div className="w-full h-full bg-[#fdfcfb] rounded-full border border-[#f2f2eb] flex items-center justify-center">
-            <span className="text-6xl">🧘‍♀️</span>
+      <div className="flex-1 flex items-center justify-center w-full p-10 relative">
+        <div className="relative w-80 h-80 flex items-center justify-center">
+          <div className="absolute w-72 h-72 bg-[#fdfcfb] rounded-full border border-[#f2f2eb]" />
+          
+          <div className="relative z-10 w-full h-full">
+            <Image
+              src="/images/Yoga_Frau.jpg"
+              alt="Yoga Illustration"
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
         </div>
       </div>
 
-      {/* Login Container (Beige aus Mockup) */}
+      {/* Login Container (Beige) */}
       <div className="bg-[#f2f2eb] w-full max-w-md rounded-t-[50px] p-10 pb-12 shadow-[0_-10px_40px_rgba(0,0,0,0.02)] relative">
         
         {/* Schwebender Pfeil-Button */}
@@ -41,7 +48,21 @@ export default async function LoginPage({
           </svg>
         </div>
 
-        {/* Header - Exakt wie im Mockup */}
+        {/* Schmetterling Emojis - Kompakt & verschiedene Richtungen */}
+        <div className="absolute right-12 top-14 pointer-events-none select-none">
+          <div className="relative w-12 h-16">
+            {/* Oberster: klein & nach links geneigt */}
+            <span className="absolute -top-1 right-4 text-[14px] -rotate-[35deg] opacity-90">🦋</span>
+            
+            {/* Mittlerer: mittel & nach rechts geneigt */}
+            <span className="absolute top-4 right-6 text-[20px] rotate-[20deg] opacity-90">🦋</span>
+            
+            {/* Unterster: am größten & leicht nach links geneigt */}
+            <span className="absolute top-10 right-1 text-[28px] -rotate-[10deg] opacity-100">🦋</span>
+          </div>
+        </div>
+
+        {/* Header - Welcome Back! */}
         <div className="mb-10 text-left">
           <h1 className="text-[24px] font-bold text-[#555555] leading-tight mb-1">
             Welcome Back!
@@ -64,7 +85,6 @@ export default async function LoginPage({
           </div>
         )}
 
-        {/* LoginForm */}
         <div className="w-full">
           <LoginForm />
         </div>
