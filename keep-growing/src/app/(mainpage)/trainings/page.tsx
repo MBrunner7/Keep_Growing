@@ -119,10 +119,8 @@ export default function TrainingsPage() {
               initial={{ opacity: 0, y: 30 }} 
               animate={{ opacity: 1, y: 0 }} 
               exit={{ opacity: 0, y: -30 }} 
-              // Box verbreitert auf max-w-2xl für 2-Zeilen-Layout
               className="bg-white/95 backdrop-blur-xl rounded-[50px] p-10 shadow-2xl w-full max-w-2xl border border-white/40 flex flex-col items-center"
             >
-              {/* Überschrift in 4xl und mit Break für exakt 2 Zeilen */}
               <h2 className="font-[family-name:var(--font-cursive)] text-[#c5c1aa] text-4xl mb-10 lowercase text-center leading-[1.3] px-6">
                 wähle heute dein autogenes training <br/> und lass deinen geist wachsen
               </h2>
@@ -296,15 +294,22 @@ export default function TrainingsPage() {
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: -40 }}
                   transition={{ delay: 0.1, duration: 0.8 }}
-                  className="bg-white/95 p-10 rounded-[50px] text-center shadow-2xl max-w-sm border border-white/40 z-20 relative"
+                  className="bg-white/95 p-10 rounded-[50px] text-center shadow-2xl max-w-md border border-white/40 z-20 relative"
                 >
                   <h2 className="text-gray-800 font-bold text-2xl mb-2 italic">Wunderschön!</h2>
                   <p className="text-gray-600 font-medium text-lg mb-8 leading-relaxed">
                     Du hast eine neue Blume für deinen Garten erhalten.
                   </p>
-                  <Link href="/" className="inline-block bg-[#b57a84] text-white px-10 py-4 rounded-full font-bold uppercase text-[10px] tracking-[0.3em] shadow-lg hover:bg-[#a36973] transition-colors">
-                    Zurück zum Garten
-                  </Link>
+                  
+                  {/* Zwei Buttons für verschiedene Ziele */}
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <Link href="/blumengarten" className="inline-block bg-[#b57a84] text-white px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] shadow-lg hover:bg-[#a36973] transition-colors whitespace-nowrap">
+                      Zum Blumengarten
+                    </Link>
+                    <Link href="/" className="inline-block bg-gray-200 text-gray-700 px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] shadow-md hover:bg-gray-300 transition-colors whitespace-nowrap">
+                      Zur Startseite
+                    </Link>
+                  </div>
                 </motion.div>
 
                 <motion.div 
