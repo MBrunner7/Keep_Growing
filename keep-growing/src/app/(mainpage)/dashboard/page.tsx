@@ -63,7 +63,6 @@ export default async function DashboardPage() {
   const today = new Date().toLocaleDateString('en-CA');
 
   // Daily Entry Laden (Stimmung und Notizen) für den AKTUELLEN Tag
-  // Wir nutzen 'created_at' als Spaltennamen passend zur DB-Struktur
   const { data: entry } = await supabase
     .from('daily_entries')
     .select('score, note')
@@ -83,22 +82,48 @@ export default async function DashboardPage() {
   return (
     <main className="min-h-screen bg-white flex flex-col items-center p-6 font-sans">
       
-      {/* Header Bereich - Begrüßung und Training-Absprung */}
+      {/* Header Bereich - Begrüßung und Icons */}
       <div className="w-full max-w-md flex justify-between items-start mb-8 text-left">
-        <div>
+        <div className="flex flex-col gap-4">
+          {/* Kleineres Einstellungs-Icon oben links */}
+          <Link href="/einstellungen" className="group">
+            <div className="w-8 h-8 border border-gray-100 rounded-xl flex items-center justify-center group-hover:bg-gray-50 transition-colors shadow-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+          </Link>
+
           <h2 className="font-[family-name:var(--font-cursive)] text-[#c5c1aa] text-5xl leading-tight lowercase opacity-90">
             hello {userName}
           </h2>
         </div>
         
-        <Link href="/trainings" className="flex flex-col items-center group">
+        <div className="flex gap-4">
+          {/* Blumengarten-Icon (grün markierter Bereich im Mockup) */}
+          <Link href="/blumengarten" className="flex flex-col items-center group">
             <div className="w-12 h-12 border border-gray-100 rounded-2xl flex items-center justify-center group-hover:bg-gray-50 transition-colors shadow-sm">
                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b57a84" strokeWidth="1.5">
-                 <path d="M12 7a2 2 0 100-4 2 2 0 000 4zM5 12l2-1 3 2 2-2 3 2 2-2M7 21h10" strokeLinecap="round" strokeLinejoin="round"/>
+                 <path d="M12 10c0-3.314-2.686-6-6-6s-6 2.686-6 6 2.686 6 6 6 6-2.686 6-6z" transform="translate(6,2) scale(0.5)" strokeLinecap="round"/>
+                 <path d="M12 22V12m0 0l-4 4m4-4l4 4" strokeLinecap="round" strokeLinejoin="round"/>
+                 <circle cx="12" cy="8" r="3" />
+                 <path d="M12 5v3m-3 2h3" />
                </svg>
             </div>
-            <span className="text-[10px] uppercase tracking-[0.2em] mt-2 text-gray-400 font-bold">Training</span>
-        </Link>
+            <span className="text-[10px] uppercase tracking-[0.2em] mt-2 text-gray-400 font-bold">Garten</span>
+          </Link>
+
+          {/* Training-Icon */}
+          <Link href="/trainings" className="flex flex-col items-center group">
+              <div className="w-12 h-12 border border-gray-100 rounded-2xl flex items-center justify-center group-hover:bg-gray-50 transition-colors shadow-sm">
+                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b57a84" strokeWidth="1.5">
+                   <path d="M12 7a2 2 0 100-4 2 2 0 000 4zM5 12l2-1 3 2 2-2 3 2 2-2M7 21h10" strokeLinecap="round" strokeLinejoin="round"/>
+                 </svg>
+              </div>
+              <span className="text-[10px] uppercase tracking-[0.2em] mt-2 text-gray-400 font-bold">Training</span>
+          </Link>
+        </div>
       </div>
 
       {/* Mood & Notes Formular */}
@@ -118,7 +143,6 @@ export default async function DashboardPage() {
                 name="score" 
                 value={item.val} 
                 className="hidden peer" 
-                // Vorauswahl, falls heute schon etwas gespeichert wurde
                 defaultChecked={entry?.score === item.val} 
               />
               <span className="text-4xl transition-all duration-500 inline-block 
@@ -135,7 +159,6 @@ export default async function DashboardPage() {
         <label className="block font-bold text-gray-800 mb-3 text-lg">Notes:</label>
         <textarea 
           name="note"
-          // Wert wird hier vorausgefüllt, falls heute schon Text gespeichert wurde
           defaultValue={entry?.note || ''}
           className="w-full h-32 bg-[#f2f2eb] rounded-[25px] p-5 outline-none resize-none border-none text-gray-700 shadow-inner placeholder-gray-400"
           placeholder="Schreibe hier deine Gedanken..."
@@ -151,25 +174,21 @@ export default async function DashboardPage() {
         </div>
       </form>
 
-      {/* Insights Bereich - Graphische Auswertung */}
+      {/* Insights Bereich */}
       <div className="w-full max-w-md mt-4">
         <h3 className="font-bold text-gray-800 text-center mb-12 text-lg">Insights</h3>
         
         <div className="relative h-44 w-full ml-6">
-          
-          {/* Y-Achse Beschriftung */}
           <div className="absolute -left-8 inset-y-0 w-6 flex flex-col justify-between text-[10px] text-gray-300 font-bold pointer-events-none z-30">
             {[8, 6, 4, 2, 0].map(val => <span key={val} className="leading-[0] h-0">{val}</span>)}
           </div>
 
-          {/* Horizontale Gitterlinien */}
           <div className="absolute inset-0 flex flex-col justify-between pointer-events-none z-0">
             {[8, 6, 4, 2, 0].map((line) => (
               <div key={line} className="w-full border-t border-gray-100 h-0" />
             ))}
           </div>
 
-          {/* DYNAMISCHES LINIENDIAGRAMM (GELBE VERBINDUNG) */}
           <svg 
             viewBox="0 0 100 100" 
             className="absolute inset-0 h-full w-full pointer-events-none z-20 overflow-visible" 
@@ -186,7 +205,6 @@ export default async function DashboardPage() {
             />
           </svg>
 
-          {/* KREIS-PUNKTE AUF DEM GRAPH */}
           <div className="absolute inset-0 h-full w-full pointer-events-none z-30 overflow-visible">
             {stats.map((item, i) => {
               const x = (i * 12.5) + 6.25;
@@ -205,23 +223,18 @@ export default async function DashboardPage() {
             })}
           </div>
 
-          {/* Balkendiagramm & Hover-Effekte */}
           <div className="relative h-full w-full flex items-end justify-around pb-0 z-10">
             {stats.map((item, i) => (
               <div key={i} className="group relative flex flex-col items-center w-[10%] h-full justify-end">
-                
-                {/* Vertikale Hilfslinie bei Hover */}
                 <div className="absolute inset-x-0 top-0 bottom-0 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                   <div className="border-l border-dashed border-gray-300 h-full" />
                 </div>
 
-                {/* Tooltip für exakte Anzahl */}
                 <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-all duration-200 bg-[#2d2d2d] text-white text-[12px] font-bold py-1.5 px-3 rounded-lg z-40 shadow-xl transform -translate-y-1 group-hover:translate-y-0">
                   {item.count}
                   <div className="absolute top-full left-1/2 -ml-1 border-[6px] border-transparent border-t-[#2d2d2d]"></div>
                 </div>
 
-                {/* Datenbalken */}
                 <div 
                   className={`w-full rounded-t-lg transition-all duration-500 relative z-10 ${
                     i === stats.length - 1 
@@ -231,7 +244,6 @@ export default async function DashboardPage() {
                   style={{ height: `${(Math.min(item.count, 8) / 8) * 100}%` }}
                 />
                 
-                {/* X-Achse Beschriftung (Kalenderwochen) */}
                 <span className="absolute -bottom-7 text-[9px] text-gray-400 font-bold tracking-tighter uppercase">
                   KW{item.kw}
                 </span>
@@ -241,7 +253,6 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Footer mit Link zum Impressum */}
       <div className="mt-auto py-12 text-center">
          <Link href="/impressum" className="text-[10px] text-gray-300 underline uppercase tracking-[0.3em] font-bold hover:text-gray-600 transition-colors">
             About us
