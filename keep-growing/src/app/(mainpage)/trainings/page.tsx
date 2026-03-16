@@ -23,6 +23,23 @@ const auraParticles = Array.from({ length: 24 }).map((_, i) => {
   };
 });
 
+// Mapping der Trainings-Kategorien auf die neuen Flower-Types
+const FLOWER_MAPPING: Record<string, string> = {
+  'meditation': 'creativityWarmth',
+  'atemübung': 'imaginativeTraining',
+  'selbstliebe': 'innerPeace',
+  'entspannung': 'selfEmpowerment',
+  'energie': 'creativityWarmth' // Fallback/Zusatz
+};
+
+// Emojis für die Anzeige im Reward-Screen (bis die Bilder final eingebunden sind)
+const FLOWER_EMOJIS: Record<string, string> = {
+  'creativityWarmth': '🌸',
+  'imaginativeTraining': '🌺',
+  'innerPeace': '🌻',
+  'selfEmpowerment': '🌷'
+};
+
 export default function TrainingsPage() {
   const [view, setView] = useState<'menu' | 'growth' | 'player' | 'reward'>('menu');
   const [trainings, setTrainings] = useState<any[]>([]);
@@ -37,7 +54,6 @@ export default function TrainingsPage() {
   const [rewardFlower, setRewardFlower] = useState('🌸');
   
   const supabase = createClient();
-  const flowers = ['🌸', '🌺', '🌻', '🌼', '🌷', '🌹', '💐', '💠'];
 
   useEffect(() => {
     async function loadInitialData() {
@@ -49,8 +65,10 @@ export default function TrainingsPage() {
   }, []);
 
   const handleCompletion = async () => {
-    const randomFlower = flowers[Math.floor(Math.random() * flowers.length)];
-    setRewardFlower(randomFlower);
+    const typeKey = activeTraining?.training_type?.toLowerCase() || 'meditation';
+    const assignedFlowerType = FLOWER_MAPPING[typeKey] || 'innerPeace';
+    
+    setRewardFlower(FLOWER_EMOJIS[assignedFlowerType] || '🌸');
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user && activeTraining) {
@@ -67,7 +85,7 @@ export default function TrainingsPage() {
 
       await supabase.from('flower_garden').insert({
         user_id: user.id,
-        flower_type: activeTraining.training_type,
+        flower_type: assignedFlowerType, 
         x: Math.random(),
         y: Math.random(),
         layer_order: (count || 0) + 1
@@ -119,9 +137,20 @@ export default function TrainingsPage() {
               initial={{ opacity: 0, y: 30 }} 
               animate={{ opacity: 1, y: 0 }} 
               exit={{ opacity: 0, y: -30 }} 
-              className="bg-white/95 backdrop-blur-xl rounded-[50px] p-10 shadow-2xl w-full max-w-2xl border border-white/40 flex flex-col items-center"
+              className="relative bg-white/95 backdrop-blur-xl rounded-[50px] p-10 shadow-2xl w-full max-w-2xl border border-white/40 flex flex-col items-center"
             >
-              <h2 className="font-[family-name:var(--font-cursive)] text-[#c5c1aa] text-4xl mb-10 lowercase text-center leading-[1.3] px-6">
+              {/* Home Button: Weißer Hintergrund, Hellrotes Icon */}
+              <Link 
+                href="/" 
+                className="absolute top-8 right-8 w-11 h-11 flex items-center justify-center rounded-[15px] bg-white border border-gray-100 shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all group"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-[#b57a84]">
+                  <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
+                  <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
+                </svg>
+              </Link>
+
+              <h2 className="font-[family-name:var(--font-cursive)] text-[#c5c1aa] text-4xl mb-10 lowercase text-center leading-[1.3] px-6 mt-4">
                 wähle heute dein autogenes training <br/> und lass deinen geist wachsen
               </h2>
 
@@ -301,7 +330,6 @@ export default function TrainingsPage() {
                     Du hast eine neue Blume für deinen Garten erhalten.
                   </p>
                   
-                  {/* Zwei Buttons für verschiedene Ziele */}
                   <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <Link href="/blumengarten" className="inline-block bg-[#b57a84] text-white px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] shadow-lg hover:bg-[#a36973] transition-colors whitespace-nowrap">
                       Zum Blumengarten
@@ -323,11 +351,9 @@ export default function TrainingsPage() {
               </div>
             </div>
           )}
-
         </AnimatePresence>
       </div>
 
-      {/* FIXED "ABOUT US" LINK */}
       <div className="fixed bottom-10 left-0 w-full z-50 flex justify-center pointer-events-none">
         <Link 
           href="/impressum" 
