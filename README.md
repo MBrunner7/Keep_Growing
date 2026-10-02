@@ -8,8 +8,6 @@
 
 ## Dein Set-up für mentales Wachstum
 
-[Zum Login](https://keep-growing-jet.vercel.app/login) | [Live Demo](https://keep-growing-jet.vercel.app)
-
 **Keep Growing** ist eine Web-App für Autogenes Training und mentale Selbstfürsorge: Stimmungs-Tagebuch, geführte Audio-Entspannungsübungen, Auswertung der eigenen Trainingsdaten und ein interaktiver Blumengarten als Gamification-Element. Die App ersetzt keine medizinische Behandlung, sondern unterstützt junge, digital affine Frauen dabei, bewusste Entspannungsroutinen in den Alltag zu integrieren und durch soziale Interaktion dranzubleiben.
 
 Entstanden ist Keep Growing durch den Studiengang BWL–Gesundheitsmanagement (WGM 23) an der DHBW Ravensburg. Umgesetzt wurde dies als eine **responsive Webanwendung** für eine größtmögliche Unabhängigkeit von Drittanbietern.
